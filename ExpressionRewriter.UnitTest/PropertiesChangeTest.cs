@@ -48,10 +48,26 @@ namespace ExpressionRewriting.UnitTest
             Assert.IsTrue(_change.SourceCorrespondsTo(ex.Body));
         }
 
+        [TestMethod]
+        public void GetSequenceOriginExpression_ShouldReturnNull_IfPropertiesSequenceDoesNotCorrespondToSource()
+        {
+            Expression<Func<VariableData, string>> ex = vd => vd.Name;
+
+            Assert.IsNull(_change.GetSequenceOriginExpression(ex.Body));
+        }
+
+        [TestMethod]
+        public void GetSequenceOriginExpression_ShouldReturnNotNull_IfPropertiesSequenceCorrespondsToSource()
+        {
+            Expression<Func<VariableData, string>> ex = vd => vd.Storage.PhysicalSchemaName;
+
+            Assert.AreEqual(typeof(VariableData), _change.GetSequenceOriginExpression(ex.Body).Type);
+        }
+
         private PropertiesChange GetPropertiesChange()
         {
             return new PropertiesChange(
-                new PropertiesSequence(_source.Body), 
+                new PropertiesSequence(_source.Body),
                 new PropertiesSequence(_target.Body)
                 );
         }

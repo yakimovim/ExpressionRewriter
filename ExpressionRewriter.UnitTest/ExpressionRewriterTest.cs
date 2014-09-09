@@ -50,5 +50,29 @@ namespace ExpressionRewriting.UnitTest
 
             CollectionAssert.AreEquivalent(new[] { "respondent", "respid" }, variableData);
         }
+
+        [TestMethod]
+        public void RewritingOfProperties_Works()
+        {
+            Expression<Func<VariableInfo, bool>> sourceEx = vi => vi.VariableType == VariableType.Single;
+
+            var targetEx = _rewriter.Rewrite<Func<VariableData, bool>>(sourceEx);
+
+            var variableData = _repository.GetVariables().Where(targetEx.Compile()).Select(vd => vd.Name).ToArray();
+
+            CollectionAssert.AreEquivalent(new[] { "status", "sex" }, variableData);
+        }
+
+        [TestMethod]
+        public void RewritingOfProperties_WithFunction_Works()
+        {
+            Expression<Func<VariableInfo, bool>> sourceEx = vi => vi.Placement.PhysicalTableName.EndsWith("_2");
+
+            var targetEx = _rewriter.Rewrite<Func<VariableData, bool>>(sourceEx);
+
+            var variableData = _repository.GetVariables().Where(targetEx.Compile()).Select(vd => vd.Name).ToArray();
+
+            CollectionAssert.AreEquivalent(new[] { "visited_cities" }, variableData);
+        }
     }
 }

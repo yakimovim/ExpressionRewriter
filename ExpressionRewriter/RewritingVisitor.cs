@@ -49,6 +49,14 @@ namespace ExpressionRewriting
 
         protected override Expression VisitMember(MemberExpression node)
         {
+            var propertiesChange = _propertiesChanges.FirstOrDefault(pc => pc.SourceCorrespondsTo(node));
+            if (propertiesChange != null)
+            {
+                Expression sequenceOrigin = propertiesChange.GetSequenceOriginExpression(node);
+                Expression newSequenceOrigin = Visit(sequenceOrigin);
+                return propertiesChange.GetNewPropertiesSequence(newSequenceOrigin);
+            }
+
             Expression expression = Visit(node.Expression);
             if (expression == node.Expression)
             {
