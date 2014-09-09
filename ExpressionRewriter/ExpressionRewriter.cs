@@ -7,6 +7,7 @@ namespace ExpressionRewriting
     public class ExpressionRewriter
     {
         private readonly IDictionary<Type, Type> _argumentTypeChanges = new Dictionary<Type, Type>(); 
+        private readonly IList<PropertiesChange> _propertiesChanges = new List<PropertiesChange>();
 
         public ExpressionRewriterArgumentChange<TSource> ChangeArgumentType<TSource>()
         {
@@ -23,15 +24,16 @@ namespace ExpressionRewriting
             _argumentTypeChanges[sourceType] = targetType;
         }
 
-        internal void AddPropertyChange(Expression sourceBody, Expression targetBody)
+        internal void AddPropertyChange(PropertiesSequence source, PropertiesSequence target)
         {
+            _propertiesChanges.Add(new PropertiesChange(source, target));
         }
 
         public Expression<T> Rewrite<T>(Expression sourceEx)
         {
             if (sourceEx == null) throw new ArgumentNullException("sourceEx");
 
-            var rewriter = new RewritingVisitor(_argumentTypeChanges);
+            var rewriter = new RewritingVisitor(_argumentTypeChanges, _propertiesChanges);
 
             return rewriter.Rewrite<T>(sourceEx);
         }

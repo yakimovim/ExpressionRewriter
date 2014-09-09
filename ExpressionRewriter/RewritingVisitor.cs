@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 
 namespace ExpressionRewriting
 {
@@ -10,11 +12,15 @@ namespace ExpressionRewriting
         private readonly IDictionary<string, ParameterExpression> _argumentSubstitutions = new Dictionary<string, ParameterExpression>();
 
         private readonly IDictionary<Type, Type> _argumentTypeChanges;
+        private readonly IList<PropertiesChange> _propertiesChanges;
 
-        public RewritingVisitor(IDictionary<Type, Type> argumentTypeChanges)
+        [DebuggerStepThrough]
+        public RewritingVisitor(IDictionary<Type, Type> argumentTypeChanges, IList<PropertiesChange> propertiesChanges)
         {
             if (argumentTypeChanges == null) throw new ArgumentNullException("argumentTypeChanges");
+            if (propertiesChanges == null) throw new ArgumentNullException("propertiesChanges");
             _argumentTypeChanges = argumentTypeChanges;
+            _propertiesChanges = propertiesChanges;
         }
 
         public Expression<T> Rewrite<T>(Expression sourceEx)
@@ -54,10 +60,11 @@ namespace ExpressionRewriting
                 return Expression.MakeMemberAccess(expression, node.Member);
             }
 
-            var newMember = expression.Type.GetMember(node.Member.Name).FirstOrDefault();
+            var newMember = expression.Type.GetMember(node.Member.Name)
+                .FirstOrDefault(m => m.MemberType == MemberTypes.Property || m.MemberType == MemberTypes.Field);
             if (newMember == null)
             {
-                throw new InvalidOperationException(string.Format("Type '{0}' does not contain member '{1}'", expression.Type, node.Member.Name));
+                throw new InvalidOperationException(string.Format("Type '{0}' does not contain field or property '{1}'", expression.Type, node.Member.Name));
             }
 
             return Expression.MakeMemberAccess(expression, newMember);

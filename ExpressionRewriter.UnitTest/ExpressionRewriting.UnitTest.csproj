@@ -54,6 +54,8 @@
     <Compile Include="Model\VariableDataRepository.cs" />
     <Compile Include="Model\VariableInfo.cs" />
     <Compile Include="ExpressionRewriterTest.cs" />
+    <Compile Include="PropertiesChangeTest.cs" />
+    <Compile Include="PropertiesSequenceTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

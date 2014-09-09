@@ -4,11 +4,11 @@ using System.Linq.Expressions;
 
 namespace ExpressionRewriting
 {
-    public class ExpressionRewriterPropertyChange
+    public sealed class ExpressionRewriterPropertyChange
     {
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private readonly ExpressionRewriter _expressionRewriter;
-        private readonly Expression _sourceBody;
+        private readonly PropertiesSequence _sourceSequence;
 
         [DebuggerStepThrough]
         public ExpressionRewriterPropertyChange(ExpressionRewriter expressionRewriter, Expression sourceBody)
@@ -16,12 +16,12 @@ namespace ExpressionRewriting
             if (expressionRewriter == null) throw new ArgumentNullException("expressionRewriter");
             if (sourceBody == null) throw new ArgumentNullException("sourceBody");
             _expressionRewriter = expressionRewriter;
-            _sourceBody = sourceBody;
+            _sourceSequence = new PropertiesSequence(sourceBody); 
         }
 
         public void To<T>(Expression<Func<T, object>> target)
         {
-            _expressionRewriter.AddPropertyChange(_sourceBody, target.Body);
+            _expressionRewriter.AddPropertyChange(_sourceSequence, new PropertiesSequence(target.Body));
         }
     }
 }

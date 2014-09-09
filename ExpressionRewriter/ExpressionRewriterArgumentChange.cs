@@ -3,7 +3,7 @@ using System.Diagnostics;
 
 namespace ExpressionRewriting
 {
-    public class ExpressionRewriterArgumentChange<TSource>
+    public sealed class ExpressionRewriterArgumentChange<TSource>
     {
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private readonly ExpressionRewriter _expressionRewriter;

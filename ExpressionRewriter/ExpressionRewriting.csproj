@@ -42,6 +42,8 @@
     <Compile Include="ExpressionRewriter.cs" />
     <Compile Include="ExpressionRewriterArgumentChange.cs" />
     <Compile Include="ExpressionRewriterPropertyChange.cs" />
+    <Compile Include="PropertiesChange.cs" />
+    <Compile Include="PropertiesSequence.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RewritingVisitor.cs" />
   </ItemGroup>
