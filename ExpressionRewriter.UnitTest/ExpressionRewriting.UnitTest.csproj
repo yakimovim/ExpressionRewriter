@@ -50,9 +50,9 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="Model\VariableData.cs" />
-    <Compile Include="Model\VariableDataRepository.cs" />
-    <Compile Include="Model\VariableInfo.cs" />
+    <Compile Include="Model\Person.cs" />
+    <Compile Include="Model\PersonRepository.cs" />
+    <Compile Include="Model\PersonInfo.cs" />
     <Compile Include="ExpressionRewriterTest.cs" />
     <Compile Include="PropertiesChangeTest.cs" />
     <Compile Include="PropertiesSequenceTest.cs" />

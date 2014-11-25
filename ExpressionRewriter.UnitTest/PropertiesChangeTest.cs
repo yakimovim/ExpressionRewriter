@@ -8,16 +8,16 @@ namespace ExpressionRewriting.UnitTest
     [TestClass]
     public class PropertiesChangeTest
     {
-        private Expression<Func<VariableData, object>> _source;
-        private Expression<Func<VariableInfo, object>> _target;
+        private Expression<Func<Person, object>> _source;
+        private Expression<Func<PersonInfo, object>> _target;
 
         private PropertiesChange _change;
 
         [TestInitialize]
         public void TestInitialize()
         {
-            _source = vd => vd.Storage.PhysicalSchemaName;
-            _target = vi => vi.Placement.PhysicalSchemaName;
+            _source = p => p.Address.City;
+            _target = pi => pi.Location.Town;
 
             _change = GetPropertiesChange();
         }
@@ -26,8 +26,8 @@ namespace ExpressionRewriting.UnitTest
         [ExpectedException(typeof(ArgumentException))]
         public void Constructor_ShouldThrowException_IfSequencesOfPropertiesHaveDifferentResultTypes()
         {
-            _source = vd => vd.Storage.PhysicalSchemaName;
-            _target = vi => vi.StorageType;
+            _source = p => p.Address.Country;
+            _target = pi => pi.Status;
 
             GetPropertiesChange();
         }
@@ -35,7 +35,7 @@ namespace ExpressionRewriting.UnitTest
         [TestMethod]
         public void SourceCorrespondsTo_ShouldReturnFalse_IfPropertiesSequenceDoesNotCorrespondToSource()
         {
-            Expression<Func<VariableData, string>> ex = vd => vd.Name;
+            Expression<Func<Person, string>> ex = p => p.Name;
 
             Assert.IsFalse(_change.SourceCorrespondsTo(ex.Body));
         }
@@ -43,7 +43,7 @@ namespace ExpressionRewriting.UnitTest
         [TestMethod]
         public void SourceCorrespondsTo_ShouldReturnTrue_IfPropertiesSequenceCorrespondsToSource()
         {
-            Expression<Func<VariableData, string>> ex = vd => vd.Storage.PhysicalSchemaName;
+            Expression<Func<Person, string>> ex = p => p.Address.City;
 
             Assert.IsTrue(_change.SourceCorrespondsTo(ex.Body));
         }
@@ -51,7 +51,7 @@ namespace ExpressionRewriting.UnitTest
         [TestMethod]
         public void GetSequenceOriginExpression_ShouldReturnNull_IfPropertiesSequenceDoesNotCorrespondToSource()
         {
-            Expression<Func<VariableData, string>> ex = vd => vd.Name;
+            Expression<Func<Person, string>> ex = p => p.Name;
 
             Assert.IsNull(_change.GetSequenceOriginExpression(ex.Body));
         }
@@ -59,9 +59,9 @@ namespace ExpressionRewriting.UnitTest
         [TestMethod]
         public void GetSequenceOriginExpression_ShouldReturnNotNull_IfPropertiesSequenceCorrespondsToSource()
         {
-            Expression<Func<VariableData, string>> ex = vd => vd.Storage.PhysicalSchemaName;
+            Expression<Func<Person, string>> ex = p => p.Address.City;
 
-            Assert.AreEqual(typeof(VariableData), _change.GetSequenceOriginExpression(ex.Body).Type);
+            Assert.AreEqual(typeof(Person), _change.GetSequenceOriginExpression(ex.Body).Type);
         }
 
         private PropertiesChange GetPropertiesChange()

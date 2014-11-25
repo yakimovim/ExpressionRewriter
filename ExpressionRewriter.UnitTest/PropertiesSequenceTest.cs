@@ -8,7 +8,7 @@ namespace ExpressionRewriting.UnitTest
     [TestClass]
     public class PropertiesSequenceTest
     {
-        private Expression<Func<VariableData, object>> _expression;
+        private Expression<Func<Person, object>> _expression;
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
@@ -21,7 +21,7 @@ namespace ExpressionRewriting.UnitTest
         [ExpectedException(typeof(ArgumentException))]
         public void Constructor_ShouldThrowException_IfArgumentIsNotSequenceOfProperties()
         {
-            _expression = vd => string.IsNullOrEmpty(vd.Name);
+            _expression = p => string.IsNullOrEmpty(p.Name);
 
             new PropertiesSequence(_expression.Body);
         }
@@ -29,11 +29,11 @@ namespace ExpressionRewriting.UnitTest
         [TestMethod]
         public void Constructor_ShouldFillPropertiesCorrectly_IfOnlyOnePropertyInSequence()
         {
-            _expression = vd => vd.Name;
+            _expression = p => p.Name;
 
             var sequence = new PropertiesSequence(_expression.Body);
             
-            Assert.AreEqual(typeof(VariableData), sequence.SequenceOriginType);
+            Assert.AreEqual(typeof(Person), sequence.SequenceOriginType);
             Assert.AreEqual(1, sequence.Properties.Length);
             Assert.AreEqual("Name", sequence.Properties[0].Name);
             Assert.AreEqual(typeof(String), sequence.Properties[0].ResultType);
@@ -42,16 +42,16 @@ namespace ExpressionRewriting.UnitTest
         [TestMethod]
         public void Constructor_ShouldFillPropertiesCorrectly_IfSeveralPropertiesInSequence()
         {
-            _expression = vd => vd.Storage.PhysicalSchemaName;
+            _expression = p => p.Address.City;
 
             var sequence = new PropertiesSequence(_expression.Body);
 
-            Assert.AreEqual(typeof(VariableData), sequence.SequenceOriginType);
+            Assert.AreEqual(typeof(Person), sequence.SequenceOriginType);
             Assert.AreEqual(2, sequence.Properties.Length);
-            Assert.AreEqual("PhysicalSchemaName", sequence.Properties[0].Name);
+            Assert.AreEqual("City", sequence.Properties[0].Name);
             Assert.AreEqual(typeof(String), sequence.Properties[0].ResultType);
-            Assert.AreEqual("Storage", sequence.Properties[1].Name);
-            Assert.AreEqual(typeof(VariableStorage), sequence.Properties[1].ResultType);
+            Assert.AreEqual("Address", sequence.Properties[1].Name);
+            Assert.AreEqual(typeof(Address), sequence.Properties[1].ResultType);
         }
     }
 }

@@ -10,69 +10,66 @@ namespace ExpressionRewriting.UnitTest
     public class ExpressionRewriterTest
     {
         private ExpressionRewriter _rewriter;
-        private VariableDataRepository _repository;
+        private PersonRepository _repository;
 
         [TestInitialize]
         public void TestInitialize()
         {
-            _repository = new VariableDataRepository();
+            _repository = new PersonRepository();
 
             _rewriter = new ExpressionRewriter();
-            _rewriter.ChangeArgumentType<VariableInfo>().To<VariableData>();
-            _rewriter.ChangeProperty<VariableInfo>(vi => vi.VariableType).To<VariableData>(vd => vd.Type);
-            _rewriter.ChangeProperty<VariableInfo>(vi => vi.StorageType).To<VariableData>(vd => vd.Storage.Type);
-            _rewriter.ChangeProperty<VariableInfo>(vi => vi.MartTableName).To<VariableData>(vd => vd.Storage.MartTableName);
-            _rewriter.ChangeProperty<VariableInfo>(vi => vi.VariableSpaceName).To<VariableData>(vd => vd.Storage.VariableSpaceName);
-            _rewriter.ChangeProperty<VariableInfo>(vi => vi.Placement.PhysicalSchemaName).To<VariableData>(vd => vd.Storage.PhysicalSchemaName);
-            _rewriter.ChangeProperty<VariableInfo>(vi => vi.Placement.PhysicalTableName).To<VariableData>(vd => vd.Storage.PhysicalTableName);
+            _rewriter.ChangeArgumentType<PersonInfo>().To<Person>();
+            _rewriter.ChangeProperty<PersonInfo>(pi => pi.Status).To<Person>(p => p.FamilyStatus);
+            _rewriter.ChangeProperty<PersonInfo>(pi => pi.Country).To<Person>(p => p.Address.Country);
+            _rewriter.ChangeProperty<PersonInfo>(pi => pi.Location.Town).To<Person>(vd => vd.Address.City);
         }
 
         [TestMethod]
         public void SimpleRewriting_Works()
         {
-            Expression<Func<VariableInfo, bool>> sourceEx = vi => vi.VariableId < 4;
+            Expression<Func<PersonInfo, bool>> sourceEx = pi => pi.PersonId < 4;
 
-            var targetEx = _rewriter.Rewrite<Func<VariableData, bool>>(sourceEx);
+            var targetEx = _rewriter.Rewrite<Func<Person, bool>>(sourceEx);
 
-            var variableData = _repository.GetVariables().Where(targetEx.Compile()).Select(vd => vd.Name).ToArray();
+            var variableData = _repository.GetPersons().Where(targetEx.Compile()).Select(vd => vd.Name).ToArray();
 
-            CollectionAssert.AreEquivalent(new[] { "respondent", "respid", "interview_start" }, variableData);
+            CollectionAssert.AreEquivalent(new[] { "John", "Mary", "David" }, variableData);
         }
 
         [TestMethod]
         public void SimpleRewriting_WithFunctionCall_Works()
         {
-            Expression<Func<VariableInfo, bool>> sourceEx = vi => vi.Name.StartsWith("r");
+            Expression<Func<PersonInfo, bool>> sourceEx = pi => pi.Name.EndsWith("n");
 
-            var targetEx = _rewriter.Rewrite<Func<VariableData, bool>>(sourceEx);
+            var targetEx = _rewriter.Rewrite<Func<Person, bool>>(sourceEx);
 
-            var variableData = _repository.GetVariables().Where(targetEx.Compile()).Select(vd => vd.Name).ToArray();
+            var variableData = _repository.GetPersons().Where(targetEx.Compile()).Select(vd => vd.Name).ToArray();
 
-            CollectionAssert.AreEquivalent(new[] { "respondent", "respid" }, variableData);
+            CollectionAssert.AreEquivalent(new[] { "John", "Ann", "Yen" }, variableData);
         }
 
         [TestMethod]
         public void RewritingOfProperties_Works()
         {
-            Expression<Func<VariableInfo, bool>> sourceEx = vi => vi.VariableType == VariableType.Single;
+            Expression<Func<PersonInfo, bool>> sourceEx = pi => pi.Status == FamilyStatus.Single;
 
-            var targetEx = _rewriter.Rewrite<Func<VariableData, bool>>(sourceEx);
+            var targetEx = _rewriter.Rewrite<Func<Person, bool>>(sourceEx);
 
-            var variableData = _repository.GetVariables().Where(targetEx.Compile()).Select(vd => vd.Name).ToArray();
+            var variableData = _repository.GetPersons().Where(targetEx.Compile()).Select(vd => vd.Name).ToArray();
 
-            CollectionAssert.AreEquivalent(new[] { "status", "sex" }, variableData);
+            CollectionAssert.AreEquivalent(new[] { "John", "Mary", "Svetlana" }, variableData);
         }
 
         [TestMethod]
         public void RewritingOfProperties_WithFunction_Works()
         {
-            Expression<Func<VariableInfo, bool>> sourceEx = vi => vi.Placement.PhysicalTableName.EndsWith("_2");
+            Expression<Func<PersonInfo, bool>> sourceEx = pi => pi.Location.Town.StartsWith("L");
 
-            var targetEx = _rewriter.Rewrite<Func<VariableData, bool>>(sourceEx);
+            var targetEx = _rewriter.Rewrite<Func<Person, bool>>(sourceEx);
 
-            var variableData = _repository.GetVariables().Where(targetEx.Compile()).Select(vd => vd.Name).ToArray();
+            var variableData = _repository.GetPersons().Where(targetEx.Compile()).Select(vd => vd.Name).ToArray();
 
-            CollectionAssert.AreEquivalent(new[] { "visited_cities" }, variableData);
+            CollectionAssert.AreEquivalent(new[] { "Mary", "Ann", "Peter" }, variableData);
         }
     }
 }
