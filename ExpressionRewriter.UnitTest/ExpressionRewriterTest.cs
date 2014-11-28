@@ -21,7 +21,7 @@ namespace ExpressionRewriting.UnitTest
             _rewriter.ChangeArgumentType<PersonInfo>().To<Person>();
             _rewriter.ChangeProperty<PersonInfo>(pi => pi.Status).To<Person>(p => p.FamilyStatus);
             _rewriter.ChangeProperty<PersonInfo>(pi => pi.Country).To<Person>(p => p.Address.Country);
-            _rewriter.ChangeProperty<PersonInfo>(pi => pi.Location.Town).To<Person>(vd => vd.Address.City);
+            _rewriter.ChangeProperty<PersonInfo>(pi => pi.Location.Town).To<Person>(p => p.Address.City);
         }
 
         [TestMethod]
