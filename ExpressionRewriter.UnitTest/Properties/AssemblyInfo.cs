@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("ExpressionRewriter.UnitTest")]
+[assembly: AssemblyTitle("Expression Rewriter Unit Tests")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Confirmit")]
-[assembly: AssemblyProduct("ExpressionRewriter.UnitTest")]
-[assembly: AssemblyCopyright("Copyright © Confirmit 2014")]
+[assembly: AssemblyCompany("Edlin Software")]
+[assembly: AssemblyProduct("Expression Rewriter")]
+[assembly: AssemblyCopyright("Copyright © Edlin Software 2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
